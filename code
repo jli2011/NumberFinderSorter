@@ -1,0 +1,156 @@
+import java.io.*;
+import java.util.Scanner;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import javafx.scene.control.Label;
+import javafx.geometry.Pos;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+
+public class Assignment15 extends Application {
+    
+    int[] array = new int[20]; 
+    String numbers = "";
+    TextField searchField = new TextField();
+    TextField tf = new TextField();
+    FlowPane root = new FlowPane();
+    Label unsorted = new Label("");
+    Label sorted = new Label("");
+    Label request = new Label("Please type the number you want to find: ");
+    Label result = new Label("");
+    Label label1 = new Label("Unsorted: ");
+    Label label2 = new Label("Sorted: ");
+    Label label3 = new Label("Result: ");
+    Button saveButton = new Button();
+    Button openButton = new Button();
+    Button sortButton = new Button();
+    Button search = new Button();
+    
+    public static void main(String[] args) 
+    {Assignment15.launch();}  
+    @Override
+    
+    public void start(Stage primaryStage) {
+      //Generate 20 random integers between 1 and 1000 and store them in an array
+        for (int i = 0; i < 20; i++)
+          {array[i] = (int)(Math.random()*1000);} 
+      //Display the list of integers on a label control
+        for (int j = 0; j < array.length; j++)
+            {numbers = numbers + " " + array[j];}
+        unsorted.setText(numbers);
+      //Add a button to save the integers to an external file.
+        saveButton.setText("Save");
+      //Add a button to open the file and read the numbers back into the array.
+        openButton.setText("Open");
+      //Add a button to sort the numbers. You may use any sorting technique you choose.
+        sortButton.setText("Sort");
+      //Adding enter key for search function
+        search.setText("Find");
+      //Add a label below the label that contains the unsorted list. Display the sorted list in this label.
+        root.setAlignment(Pos.TOP_LEFT);
+        root.setHgap(10);
+        root.setVgap(10);
+        root.getChildren().addAll(saveButton, openButton,label1, unsorted, sortButton, label2, sorted, request, searchField, search, label3, result);
+        Scene scene = new Scene(root, 635, 100);
+        primaryStage.setTitle("Final Project");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        sortButton.setOnAction(new MyHandler());
+        openButton.setOnAction(new MyHandler());
+        saveButton.setOnAction(new MyHandler());
+        search.setOnAction(new MyHandler());
+    }
+    
+    public class MyHandler implements EventHandler<ActionEvent> 
+    {
+        public Window stage;
+     @Override
+        public void handle (ActionEvent e) 
+        {
+              if (e.getSource() == sortButton)
+                  {
+                      int i, j, min, temp;
+                      for (i = 0; i < 20; i++)
+                      {
+                        min = i;
+                        for (j = i+1; j < array.length; j++)
+                        {
+                          if (array[j] < array[min])
+                          {min = j;}
+                        }
+                        temp = array[i];
+                        array[i] = array[min];
+                        array[min] = temp;
+                        int step = i;
+                        System.out.print("Step " + step + ": ");
+                        for (int k = 0; k < 20; k++)
+                        {System.out.print(array[k] + " ");}
+                        System.out.println("");
+                      }
+                      //for (int f = 0; f < array.length; f++)
+                      //{numbers = numbers + " " + array[f];}
+                         numbers = array[0] + " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5] + " " + array[6] + " " + array[7] + " " + array[8] + " " + array[9] + " " + array[10] + " " + array[11] + " " + array[12] + " " + array[13] + " " + array[14] + " " + array[15] + " " + array[16] + " " + array[17] + " " + array[18] + " " + array[19];
+                         sorted.setText(numbers);
+                  }
+              else if (e.getSource() == saveButton) 
+              {
+                 try
+                 {
+                    FileChooser files = new FileChooser();
+                    File saveFile = files.showSaveDialog(stage);//Pops up a "Save File" file chooser dialog.
+                    PrintWriter fout = new PrintWriter(saveFile);
+                    fout.append(unsorted.getText());
+                    fout.close();
+                 }
+                 catch (IOException z){}
+              }
+              else if (e.getSource() == openButton)
+              {
+                  FileChooser fc = new FileChooser();
+                  File dir = new File(System.getProperty("user.home"));
+                  fc.setInitialDirectory(dir);
+                  Stage stage = new Stage();
+                  File file = fc.showOpenDialog(stage);
+                  if (file != null)
+                  {
+                    try
+                    {
+                       Scanner fin = new Scanner(file);
+                       String fileIn = "";
+                       while (fin.hasNext())
+                       {
+                         fileIn = fin.nextLine(); //Reads from file
+                         while (fin.hasNext())
+                         {fileIn = fileIn.concat(fin.nextLine() + "\n");}
+                         unsorted.setText(fileIn); //writes string to text area
+                       }  
+                    fin.close();
+                    }
+                catch(FileNotFoundException n){}
+            }
+              }
+              else if (e.getSource() == search)
+              {
+                  int searchValue = Integer.parseInt(searchField.getText());
+                  boolean flag = false;
+                  int i;
+                  for (i = 0; i < array.length; i++)
+                  {
+                      if (array[i] == searchValue)
+                      {
+                          flag = true;
+                          result.setText(searchValue + " is at index position " + i);
+                      } 
+                  }
+                  if (flag == false)
+                  {result.setText(searchValue + " not found");}
+              }
+        }
+    }
+}
